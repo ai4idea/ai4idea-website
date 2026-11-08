@@ -255,6 +255,8 @@ h1, h2, h3 {
 .site-footer .wordmark { color: var(--on-ultra); font-size: 1.1rem; }
 .site-footer a { text-decoration: none; }
 .site-footer a:hover { color: var(--on-ultra); }
+.social-link { display: inline-flex; align-items: center; gap: 8px; }
+.social-link:hover svg { color: var(--teal-light); }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1000px) {
