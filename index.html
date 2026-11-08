@@ -43,9 +43,10 @@
         <li><a href="#objectives">Objectives</a></li>
         <li><a href="#structure">Structure</a></li>
         <li><a href="#join">Join</a></li>
+        <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
-    <a class="btn btn--primary btn--small nav__cta" href="mailto:info@ai4idea.org">Get in touch</a>
+    <a class="btn btn--primary btn--small nav__cta" href="#contact">Get in touch</a>
     <button class="nav__toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
@@ -268,8 +269,8 @@
           <h2>Turning ideas into intelligent solutions, together</h2>
           <p>Whether you are a researcher, educator, student, entrepreneur or institution, there is a place for you in AI4IDEA.</p>
           <div class="join__actions">
-            <a class="btn btn--primary" href="mailto:info@ai4idea.org?subject=Joining%20AI4IDEA">Become a member</a>
-            <a class="btn btn--ghost" href="mailto:info@ai4idea.org?subject=Partnership%20with%20AI4IDEA">Partner with us</a>
+            <a class="btn btn--primary" href="#contact" data-topic="Membership">Become a member</a>
+            <a class="btn btn--ghost" href="#contact" data-topic="Partnership">Partner with us</a>
           </div>
         </div>
         <ul class="join__ways">
@@ -280,6 +281,60 @@
           <li>Speak, mentor or run a workshop</li>
         </ul>
       </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="section section--paper" id="contact">
+    <div class="wrap contact">
+      <div class="contact__intro">
+        <span class="eyebrow">Contact</span>
+        <h2>Get in touch</h2>
+        <p>Questions about membership, partnerships, workshops or events? Send us a message and we'll get back to you.</p>
+        <p class="contact__direct">Or email us directly at <a href="mailto:info@ai4idea.org">info@ai4idea.org</a></p>
+      </div>
+
+      <form class="contact__form" id="contact-form" novalidate>
+        <div class="field-row">
+          <div class="field">
+            <label for="cf-name">Name</label>
+            <input id="cf-name" name="name" type="text" autocomplete="name" required maxlength="100">
+          </div>
+          <div class="field">
+            <label for="cf-email">Email</label>
+            <input id="cf-email" name="email" type="email" autocomplete="email" required maxlength="150">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="cf-org">Organisation <span class="optional">(optional)</span></label>
+            <input id="cf-org" name="organisation" type="text" autocomplete="organization" maxlength="150">
+          </div>
+          <div class="field">
+            <label for="cf-topic">Topic</label>
+            <select id="cf-topic" name="topic">
+              <option>General enquiry</option>
+              <option>Membership</option>
+              <option>Partnership</option>
+              <option>Workshops &amp; training</option>
+              <option>Events &amp; speaking</option>
+              <option>Student chapters</option>
+              <option>Media</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="cf-message">Message</label>
+          <textarea id="cf-message" name="message" rows="6" required maxlength="5000"></textarea>
+        </div>
+        <!-- Spam trap: hidden from people, bots fill it in -->
+        <div class="hp" aria-hidden="true">
+          <label for="cf-website">Website</label>
+          <input id="cf-website" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+        <button class="btn btn--primary contact__submit" type="submit">Send message</button>
+        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+      </form>
     </div>
   </section>
 
@@ -305,6 +360,68 @@
     if (e.target.tagName === 'A') { links.classList.remove('is-open'); toggle.setAttribute('aria-expanded', 'false'); }
   });
   document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  // EmailJS settings: fill these in from your EmailJS dashboard.
+  // The public key is meant to be public; restrict allowed domains in EmailJS.
+  const EMAILJS = {
+    publicKey: 'YOUR_PUBLIC_KEY',
+    serviceId: 'YOUR_SERVICE_ID',
+    templateId: 'YOUR_TEMPLATE_ID'
+  };
+  const configured = !Object.values(EMAILJS).some(v => v.startsWith('YOUR_'));
+  if (configured && window.emailjs) emailjs.init({ publicKey: EMAILJS.publicKey });
+
+  const form = document.getElementById('contact-form');
+  const statusEl = document.getElementById('form-status');
+  const submitBtn = form.querySelector('.contact__submit');
+  const topicSel = document.getElementById('cf-topic');
+
+  // "Become a member" / "Partner with us" pre-select the topic
+  document.querySelectorAll('[data-topic]').forEach(a => {
+    a.addEventListener('click', () => { topicSel.value = a.dataset.topic; });
+  });
+
+  function setStatus(msg, kind) {
+    statusEl.textContent = msg;
+    statusEl.className = 'form-status' + (kind ? ' form-status--' + kind : '');
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (form.website.value) return; // bot
+    const name = form.name.value.trim();
+    const email = form.email.value.trim();
+    const message = form.message.value.trim();
+    if (!name || !message || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setStatus('Please enter your name, a valid email and a message.', 'error');
+      return;
+    }
+
+    if (!configured || !window.emailjs) {
+      // Fallback until EmailJS is set up: open the visitor's email app
+      setStatus('Opening your email app…');
+      const body = `Name: ${name}\nEmail: ${email}\nOrganisation: ${form.organisation.value}\n\n${message}`;
+      location.href = `mailto:info@ai4idea.org?subject=${encodeURIComponent('[AI4IDEA] ' + topicSel.value)}&body=${encodeURIComponent(body)}`;
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+    setStatus('');
+    try {
+      await emailjs.sendForm(EMAILJS.serviceId, EMAILJS.templateId, form);
+      form.reset();
+      setStatus("Thanks! Your message has been sent. We'll be in touch soon.", 'success');
+    } catch (err) {
+      setStatus('Sorry, something went wrong. Please email us at info@ai4idea.org.', 'error');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Send message';
+    }
+  });
 </script>
 </body>
 </html>
