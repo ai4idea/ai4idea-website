@@ -11,3 +11,5 @@ To preview locally: `python3 -m http.server` and open http://localhost:8000.
 - Concept: "from noise to IDEA". The hero canvas assembles scattered data bits into the letters IDEA, and bits scatter away from the cursor.
 - Colours: ultramarine `#2a2fdb`, ink `#0e1356`, fog `#eef0fa`, paper `#fbfbfe`, saffron `#ffc233` (used sparingly as a signal).
 - Type: Archivo (expanded, heavy) for headings, Source Serif 4 for body text. Both are self-hosted in `/fonts` under the SIL Open Font License.
+
+Repository: https://github.com/ai4idea/ai4idea-website.
