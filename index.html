@@ -10,7 +10,8 @@
   <meta property="og:description" content="A multidisciplinary society for AI Innovation, Development, Education and Applications.">
   <meta property="og:url" content="https://ai4idea.org">
   <meta property="og:type" content="website">
-  <meta name="theme-color" content="#2a2fdb">
+  <meta property="og:image" content="https://ai4idea.org/brand/og-image.png">
+  <meta name="theme-color" content="#0a2047">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/source-serif-4.woff2" as="font" type="font/woff2" crossorigin>
@@ -31,9 +32,8 @@
 
 <header class="site-header">
   <div class="wrap site-header__inner">
-    <a class="wordmark" href="#top" aria-label="AI4IDEA home">
-      <img src="/favicon.svg" alt="" width="30" height="30">
-      <span>AI4IDEA</span>
+    <a class="wordmark" href="#top">
+      <img src="/brand/logo-white.svg" alt="AI4IDEA" width="167" height="38">
     </a>
     <nav class="site-nav" id="site-nav" aria-label="Main">
       <ul>
@@ -316,7 +316,7 @@
 
 <footer class="site-footer">
   <div class="wrap site-footer__inner">
-    <a class="wordmark" href="#top"><img src="/favicon.svg" alt="" width="26" height="26"><span>AI4IDEA</span></a>
+    <a class="wordmark" href="#top"><img src="/brand/logo-white.svg" alt="AI4IDEA" width="132" height="30"></a>
     <span>From intelligence to impact</span>
     <a href="mailto:info@ai4idea.org">info@ai4idea.org</a>
     <span>© <span id="year">2026</span> AI4IDEA</span>
@@ -343,7 +343,7 @@
     const canvas = document.getElementById('idea-field');
     const ctx = canvas.getContext('2d');
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const WHITE = '#fbfbfe', SAFFRON = '#ffc233';
+    const WHITE = '#ffffff', SAFFRON = '#6fb6c9';
     let W = 0, H = 0, dpr = 1, size = 4, bits = [], raf = 0, started = 0;
     const pointer = { x: -9999, y: -9999, active: false };
 
