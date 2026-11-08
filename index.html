@@ -42,7 +42,6 @@
         <li><a href="#mission">Mission</a></li>
         <li><a href="#objectives">Objectives</a></li>
         <li><a href="#structure">Structure</a></li>
-        <li><a href="#join">Join</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
@@ -71,7 +70,7 @@
         <h1>From Intelligence <span>to Impact</span></h1>
         <p class="hero__lead">AI4IDEA is a multidisciplinary society dedicated to promoting Artificial Intelligence as a driving force for innovation, development, education and practical applications.</p>
         <div class="hero__actions">
-          <a class="btn btn--primary" href="#join">Join the society</a>
+          <a class="btn btn--primary" href="#contact">Join the society</a>
           <a class="btn btn--ghost" href="#pillars">Explore our pillars</a>
         </div>
       </div>
@@ -260,32 +259,8 @@
     </div>
   </section>
 
-  <!-- Join -->
-  <section class="section" id="join">
-    <div class="wrap">
-      <div class="join">
-        <div>
-          <span class="eyebrow">Get involved</span>
-          <h2>Turning ideas into intelligent solutions, together</h2>
-          <p>Whether you are a researcher, educator, student, entrepreneur or institution, there is a place for you in AI4IDEA.</p>
-          <div class="join__actions">
-            <a class="btn btn--primary" href="#contact" data-topic="Membership">Become a member</a>
-            <a class="btn btn--ghost" href="#contact" data-topic="Partnership">Partner with us</a>
-          </div>
-        </div>
-        <ul class="join__ways">
-          <li>Become a member</li>
-          <li>Start a student chapter</li>
-          <li>Join a committee or working group</li>
-          <li>Partner as a university or company</li>
-          <li>Speak, mentor or run a workshop</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
   <!-- Contact -->
-  <section class="section section--paper" id="contact">
+  <section class="section" id="contact">
     <div class="wrap contact">
       <div class="contact__intro">
         <span class="eyebrow">Contact</span>
@@ -374,11 +349,6 @@
   const statusEl = document.getElementById('form-status');
   const submitBtn = form.querySelector('.contact__submit');
   const topicSel = document.getElementById('cf-topic');
-
-  // "Become a member" / "Partner with us" pre-select the topic
-  document.querySelectorAll('[data-topic]').forEach(a => {
-    a.addEventListener('click', () => { topicSel.value = a.dataset.topic; });
-  });
 
   function setStatus(msg, kind) {
     statusEl.textContent = msg;
