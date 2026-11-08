@@ -104,13 +104,19 @@ h1, h2, h3 {
 
 /* ---------- Hero ---------- */
 .hero { background: var(--ultra); color: var(--on-ultra); position: relative; overflow: hidden; }
-.hero__field { position: relative; height: clamp(170px, 44vw, 560px); }
+/* Hero fills exactly one screen below the header */
+.hero > .wrap {
+  display: flex; flex-direction: column;
+  height: calc(100vh - 72px); height: calc(100svh - 72px);
+  min-height: 600px;
+}
+.hero__field { position: relative; flex: 1 1 auto; min-height: 150px; }
 .hero__field canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: pan-y; }
 .hero__body {
   display: grid; grid-template-columns: 1.15fr 1fr; gap: 48px; align-items: end;
-  padding: 8px 0 64px;
+  padding: 4px 0 clamp(24px, 4vh, 48px);
 }
-.hero h1 { font-size: clamp(2.5rem, 5.6vw, 4.6rem); font-weight: 900; }
+.hero h1 { font-size: clamp(2.3rem, min(5.2vw, 8.5vh), 4.4rem); font-weight: 900; }
 .hero__intro { color: var(--on-ultra-soft); font-size: 1.2rem; max-width: 34em; }
 .hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
 
@@ -119,10 +125,10 @@ h1, h2, h3 {
   position: relative;
   display: grid; grid-template-columns: repeat(5, 1fr);
   border-top: 1px solid rgba(251, 251, 254, 0.18);
-  padding: 22px 0 30px;
+  padding: 14px 0 22px;
 }
 .route::before {
-  content: ""; position: absolute; left: 0; right: 10%; top: 41px; height: 2px;
+  content: ""; position: absolute; left: 0; right: 10%; top: 33px; height: 2px;
   background: linear-gradient(90deg, rgba(251,251,254,.55), rgba(255,194,51,.9));
 }
 .route li { position: relative; padding-right: 16px; }
@@ -262,6 +268,8 @@ h1, h2, h3 {
   .site-nav a { display: block; padding: 12px 0; font-size: 1.05rem; }
   .menu-toggle { display: block; }
   .site-header .btn { display: none; }
+  .hero > .wrap { height: auto; min-height: calc(100svh - 72px); }
+  .hero__field { flex: 1 1 auto; min-height: clamp(150px, 44vw, 260px); }
   .route { grid-template-columns: 1fr; padding: 8px 0 28px; }
   .route::before { left: 6px; right: auto; top: 24px; bottom: 40px; width: 2px; height: auto; background: linear-gradient(180deg, rgba(251,251,254,.55), rgba(255,194,51,.9)); }
   .route li { display: grid; grid-template-columns: 30px 1fr; padding: 10px 0; }
@@ -270,6 +278,8 @@ h1, h2, h3 {
   .purpose__grid, .committee-groups { grid-template-columns: 1fr; }
 }
 @media (max-width: 560px) {
+  .route { display: none; }
+  .hero__body { padding-bottom: 36px; }
   .pillar-row, .objectives__grid, .field-row { grid-template-columns: 1fr; }
   .pillar, .pillar + .pillar { padding: 0; border-left: 0; }
   .pillar + .pillar { border-top: 1px solid var(--rule); margin-top: 24px; }
@@ -278,4 +288,79 @@ h1, h2, h3 {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   * { transition: none !important; }
+}
+
+/* ================= Motion ================= */
+/* Only hide things for animation when JS is running */
+
+/* Hero text arrives once the letters have formed */
+.js .hero-in { opacity: 0; transform: translateY(22px); animation: rise .8s cubic-bezier(.2,.7,.2,1) forwards; animation-delay: calc(900ms + var(--d, 0ms)); }
+@keyframes rise { to { opacity: 1; transform: none; } }
+
+/* Journey: line draws, steps light up in order, then a signal travels along it */
+.js .route::before { transform: scaleX(0); transform-origin: left; animation: draw-x 1.4s cubic-bezier(.6,0,.2,1) 1.4s forwards; }
+@keyframes draw-x { to { transform: scaleX(1); } }
+.js .route li { opacity: 0; animation: rise .6s ease-out forwards; animation-delay: calc(1.5s + var(--i) * 260ms); transform: translateY(10px); }
+.route li:last-child .bit { animation: glow 2.4s ease-in-out 3s infinite; }
+@keyframes glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,194,51,.0); } 50% { box-shadow: 0 0 0 7px rgba(255,194,51,.28); } }
+.route__signal {
+  position: absolute; top: 30px; left: 0; width: 80px; height: 8px; pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255,194,51,.95) 70%, #fff);
+  opacity: 0; animation: travel 4.2s cubic-bezier(.55,0,.35,1) 3.2s infinite;
+}
+@keyframes travel {
+  0% { left: 0; opacity: 0; } 8% { opacity: 1; } 80% { opacity: 1; }
+  100% { left: calc(90% - 80px); opacity: 0; }
+}
+
+/* Scroll reveals */
+.js .reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s ease, transform .8s cubic-bezier(.2,.7,.2,1); transition-delay: calc(var(--i, 0) * 110ms); }
+.js .reveal.is-in { opacity: 1; transform: none; }
+
+/* Pillar letters rise out of the baseline, I then D then E then A */
+.pillar__letter { display: block; overflow: hidden; }
+.pillar__letter span { display: inline-block; transition: transform .2s ease, color .2s ease; }
+.js .pillar__letter span { transform: translateY(105%); transition: transform 1s cubic-bezier(.2,.8,.2,1), color .2s ease; transition-delay: calc(var(--i, 0) * 160ms); }
+.js .pillar-row.is-in .pillar__letter span { transform: none; }
+.pillar:hover .pillar__letter span { color: var(--ultra-deep); }
+.pillar-row.is-in .pillar:hover .pillar__letter span { transform: translateY(-6px); transition-delay: 0s; }
+
+/* Objective rules draw across */
+.objective { border-top: 0; position: relative; }
+.objective::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--ultra); transform-origin: left; }
+.js .objective::before { transform: scaleX(0); transition: transform .9s cubic-bezier(.6,0,.2,1); transition-delay: calc(var(--i, 0) * 110ms + 150ms); }
+.js .objective.is-in::before { transform: scaleX(1); }
+
+/* Committee tags pop in */
+.js .committee-list li.reveal .committee-tag { transform: scale(.4); transition: transform .5s cubic-bezier(.3,1.6,.5,1); transition-delay: calc(var(--i, 0) * 110ms + 120ms); }
+.js .committee-list li.reveal.is-in .committee-tag { transform: none; }
+
+/* Initiatives ticker */
+.ticker { background: var(--ink); color: var(--on-ultra); overflow: hidden; padding: 22px 0; }
+.ticker__track { display: flex; width: max-content; animation: scroll-x 55s linear infinite; }
+.ticker:hover .ticker__track { animation-play-state: paused; }
+.ticker__track ul { display: flex; align-items: center; }
+.ticker__track li { display: flex; align-items: center; gap: 28px; padding-right: 28px; white-space: nowrap;
+  font-family: var(--display); font-stretch: 125%; font-weight: 800; font-size: clamp(1.1rem, 2vw, 1.5rem); }
+.ticker__track .bit { width: 10px; height: 10px; color: var(--saffron); }
+@keyframes scroll-x { to { transform: translateX(-50%); } }
+
+/* Buttons: the bit slides in on hover */
+.btn { position: relative; }
+.btn::after { content: ""; position: absolute; right: 9px; top: calc(50% - 3px); width: 6px; height: 6px; background: currentColor; transform: translateX(-8px) scale(0); transition: transform .22s cubic-bezier(.3,1.5,.5,1); }
+.btn:hover::after { transform: none; }
+
+@media (max-width: 820px) {
+  .route__signal { display: none; }
+  .js .route::before { transform: scaleY(0); transform-origin: top; animation-name: draw-y; }
+  @keyframes draw-y { to { transform: scaleY(1); } }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .hero-in, .js .route li, .js .reveal { opacity: 1 !important; transform: none !important; animation: none !important; }
+  .js .route::before, .js .objective::before { transform: none !important; animation: none !important; }
+  .js .pillar__letter span, .js .committee-list li.reveal .committee-tag { transform: none !important; }
+  .route__signal, .route li:last-child .bit { animation: none !important; }
+  .route__signal { display: none; }
+  .ticker__track { animation: none; }
 }
