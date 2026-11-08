@@ -362,17 +362,13 @@
   document.getElementById('year').textContent = new Date().getFullYear();
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
-  // EmailJS settings: fill these in from your EmailJS dashboard.
-  // The public key is meant to be public; restrict allowed domains in EmailJS.
+  // EmailJS settings. The public key is designed to be public.
   const EMAILJS = {
     publicKey: 'JVaLyNmVCkwzpBPS6',
     serviceId: 'service_2sa7lbo',
     templateId: 'template_xfci0tg'
   };
-  const configured = !Object.values(EMAILJS).some(v => v.startsWith('YOUR_'));
-  if (configured && window.emailjs) emailjs.init({ publicKey: EMAILJS.publicKey });
 
   const form = document.getElementById('contact-form');
   const statusEl = document.getElementById('form-status');
@@ -391,20 +387,16 @@
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (form.website.value) return; // bot
-    const name = form.name.value.trim();
-    const email = form.email.value.trim();
-    const message = form.message.value.trim();
-    if (!name || !message || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (form.website.value) return; // bot filled the hidden field
+    const params = {
+      name: form.name.value.trim(),
+      email: form.email.value.trim(),
+      organisation: form.organisation.value.trim(),
+      topic: topicSel.value,
+      message: form.message.value.trim()
+    };
+    if (!params.name || !params.message || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(params.email)) {
       setStatus('Please enter your name, a valid email and a message.', 'error');
-      return;
-    }
-
-    if (!configured || !window.emailjs) {
-      // Fallback until EmailJS is set up: open the visitor's email app
-      setStatus('Opening your email app…');
-      const body = `Name: ${name}\nEmail: ${email}\nOrganisation: ${form.organisation.value}\n\n${message}`;
-      location.href = `mailto:info@ai4idea.org?subject=${encodeURIComponent('[AI4IDEA] ' + topicSel.value)}&body=${encodeURIComponent(body)}`;
       return;
     }
 
@@ -412,11 +404,23 @@
     submitBtn.textContent = 'Sending…';
     setStatus('');
     try {
-      await emailjs.sendForm(EMAILJS.serviceId, EMAILJS.templateId, form);
+      // Call the EmailJS REST API directly (no external script needed)
+      const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          service_id: EMAILJS.serviceId,
+          template_id: EMAILJS.templateId,
+          user_id: EMAILJS.publicKey,
+          template_params: params
+        })
+      });
+      if (!res.ok) throw new Error(await res.text());
       form.reset();
       setStatus("Thanks! Your message has been sent. We'll be in touch soon.", 'success');
     } catch (err) {
-      setStatus('Sorry, something went wrong. Please email us at info@ai4idea.org.', 'error');
+      console.error('Contact form error:', err);
+      setStatus('Sorry, the message could not be sent. Please email us at info@ai4idea.org.', 'error');
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Send message';
